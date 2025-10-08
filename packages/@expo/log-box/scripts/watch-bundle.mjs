@@ -9,7 +9,7 @@ const outputDir = resolve('dist');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-await import('./build.mjs');
+await import('./build-bundle.mjs');
 
 try {
   const watcher = watch(join(__dirname, '..'), { persistent: true, recursive: true });
@@ -21,9 +21,9 @@ try {
     console.clear();
     console.log('Changes detected, rebuilding...');
     try {
-      await import(`./build.mjs?run=${Date.now()}`);
+      await import(`./build-bundle.mjs?run=${Date.now()}`);
     } catch {
-      // Error is already logged in build.mjs
+      // Error is already logged in build-bundle.mjs
     }
   }
 } catch (err) {
