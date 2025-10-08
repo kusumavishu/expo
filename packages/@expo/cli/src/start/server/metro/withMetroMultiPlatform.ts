@@ -724,7 +724,7 @@ export function withExtendedResolver(
 
         if (normal.endsWith('react-native/Libraries/LogBox/LogBoxInspectorContainer.js')) {
           if (env.EXPO_UNSTABLE_LOG_BOX) {
-            console.warn('Using Expo LogBox implementation.');
+            debug('Using Expo LogBox implementation.');
             return {
               ...result,
               filePath: require.resolve('@expo/log-box/swap-rn-logbox.js'),
