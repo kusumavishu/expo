@@ -13,6 +13,7 @@ import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.SurfaceDelegate
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
@@ -59,6 +60,8 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
             }
             return
         }
+
+        val devServerOrigin = "http://${AndroidInfoHelpers.getServerHost(context)}"
 
         // Create the BottomSheetDialog
         dialog = Dialog(context, android.R.style.Theme_NoTitleBar)
@@ -159,7 +162,7 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
                 val jsonObject = gson.toJson(initialProps)
 
                 val script = """
-                    var process=globalThis.process||{};process.env=process.env||{};process.env.EXPO_DEV_SERVER_ORIGIN='http://10.0.2.2:8081';
+                    var process=globalThis.process||{};process.env=process.env||{};process.env.EXPO_DEV_SERVER_ORIGIN='$devServerOrigin';
                     window.$$${"EXPO_INITIAL_PROPS"} = ${jsonObject};
                 """.trimIndent()
 
@@ -179,10 +182,10 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
     }
 
     override fun hide() {
-        // Build Errors are not dismissable
-        // The hide function is also called when application goes to background
+        // Build Errors are generally not dismissable
+        // NOTE: The hide function is also called also when application goes to background
         // which causes the error disappear and leave the app on black screen
-        // dialog?.dismiss()
+        dialog?.dismiss()
     }
 
     override fun isShowing(): Boolean {
