@@ -313,6 +313,7 @@ export function LogBoxContent({
 
               {!!log?.componentStack?.length && (
                 <StackTraceList
+                  key={selectedLogIndex + '-component-stack'}
                   type="component"
                   projectRoot={projectRoot ?? ''}
                   stack={log.getAvailableStack('component')}
@@ -322,6 +323,7 @@ export function LogBoxContent({
                 />
               )}
               <StackTraceList
+                key={selectedLogIndex + '-stack'}
                 type="stack"
                 projectRoot={projectRoot ?? ''}
                 stack={log.getAvailableStack('stack')}
