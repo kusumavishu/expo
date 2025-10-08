@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { DimensionValue, Platform, ScrollView, Text, View } from 'react-native';
 
-import * as hmr_fixtures from '@expo/metro-runtime/fixtures/hmr-fixtures';
-// TODO: How to import for testing?
-// import HMRClient from 'expo/build/async-require/hmr';
-// import 'foobar';
-import { DomButton } from './DomButton';
+import * as hmr_fixtures from './fixtures/hmr-fixtures';
+import HMRClient from 'expo/src/async-require/hmr';
 
+import DomButton from './DomButton';
+
+// import 'foobar';
 // eval('clasfs Foo {}');
 
 export default function App() {
@@ -32,7 +32,7 @@ export default function App() {
           console.log(undefinedVariable);
         }}
       />
-
+      <Headline>From fixtures:</Headline>
       <BigButton
         title="Build error: syntax error"
         onPress={() => {
@@ -51,7 +51,7 @@ export default function App() {
           HMRClient._onMetroError(hmr_fixtures.missing_node_module);
         }}
       />
-
+      <Headline>From console:</Headline>
       <BigButton
         title="console.error: string"
         onPress={() => {
@@ -71,9 +71,11 @@ export default function App() {
         }}
         dom={{
           useExpoDOMWebView: true,
+          matchContents: true,
         }}
       />
 
+      <Headline>From render:</Headline>
       <MountOnPress title="React: undefined component">{() => <RErrUndef />}</MountOnPress>
       <MountOnPress title="React: error in render">{() => <RErrThrowInRender />}</MountOnPress>
       <MountOnPress title="React: missing keys">{() => <RWarningMissingKeys />}</MountOnPress>
@@ -87,6 +89,15 @@ export default function App() {
         {() => <RNBugUnwrappedText />}
       </MountOnPress>
     </ScrollView>
+  );
+}
+
+function Headline({ children }: { children: React.ReactNode }) {
+  return (
+    <Text
+      style={{ fontSize: 24, color: 'black', paddingTop: 16, paddingBottom: 8 }}>
+      {children}
+    </Text>
   );
 }
 
