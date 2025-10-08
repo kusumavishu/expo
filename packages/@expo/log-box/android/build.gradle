@@ -20,7 +20,8 @@ android {
   sourceSets {
     main {
       java.srcDirs += "src/main"
-      // TODO: Only include the bundle in debug builds (likely similar expo-constants)
+    }
+    debug {
       // dist contains only ExpoLogBox.bundle
       assets.srcDirs += "${projectDir}/../dist"
     }
