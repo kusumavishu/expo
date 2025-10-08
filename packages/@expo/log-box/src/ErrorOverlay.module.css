@@ -29,25 +29,24 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
+.containerTopRadius {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
 .container {
   --expo-log-max-width: 960px;
 
   margin: 0 auto;
   max-width: var(--expo-log-max-width);
   width: 100%;
-  /* max-height: calc(100% - 56px); */
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  /* gap: 0.5rem; */
 
-  /* Wrap horizontal contents */
   overflow-x: hidden;
   background-color: var(--expo-log-color-background);
   display: flex;
   flex: 1;
   flex-direction: column;
   position: relative;
-  /* padding-bottom: calc(var(--expo-log-footer-height) + 1rem); */
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 200ms ease-out forwards;
@@ -140,19 +139,11 @@ html {
   left: 0;
   right: 0;
   display: flex;
-  border-radius: 0 0 10px 10px;
   min-height: var(--expo-log-footer-height);
   overflow: hidden;
   padding-bottom: var(--android-safe-area-inset-bottom, env(safe-area-inset-bottom));
   background-color: var(--expo-log-secondary-system-background);
 }
-
-/* NOTE: Why +16 on webkit-touch-callout? */
-/* @supports (-webkit-touch-callout: none) {
-  .footer {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
-  }
-} */
 
 .headerBlur {
   background: linear-gradient(to top, transparent, var(--expo-log-color-background));

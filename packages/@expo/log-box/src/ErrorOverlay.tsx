@@ -112,7 +112,12 @@ export function LogBoxInspector({
           }
         }}
       />
-      <div className={`${styles.container} ${closing ? styles.containerExit : ''}`}>
+      <div
+        className={classNames(
+          styles.container,
+          platform !== 'android' && styles.containerTopRadius,
+          closing && styles.containerExit,
+        )}>
         <LogBoxContent
           log={log}
           selectedLogIndex={selectedLogIndex}
@@ -499,4 +504,8 @@ export function dismissGlobalErrorOverlay() {
   }
   const div = document.getElementById('error-overlay');
   div?.remove();
+}
+
+function classNames(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
 }
