@@ -88,8 +88,12 @@ internal class ExpoDefaultDevSupportManagerFactory : DevSupportManagerFactory {
                     pausedInDebuggerOverlayManager) as DevSupportManager
             } catch (e: Exception) {
                 throw e
-                // TODO: What to do?
-                // PerftestDevSupportManager(applicationContext)
+                // Original implementation
+                // https://github.com/facebook/react-native/blob/50273758510a6d756494d05dc91055516c2a6aca/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/devsupport/DefaultDevSupportManagerFactory.kt#L95
+
+                // React Native implementation fallback is PerftestDevSupportManager(applicationContext)
+                // but that's internal class we would have to vendor, so this impl re-throws.
+                // https://github.com/facebook/react-native/blob/50273758510a6d756494d05dc91055516c2a6aca/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/devsupport/PerftestDevSupportManager.kt#L17
             }
     }
 
@@ -108,8 +112,15 @@ internal class ExpoDefaultDevSupportManagerFactory : DevSupportManagerFactory {
         useDevSupport: Boolean
     ): DevSupportManager =
         if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
-            throw Error("ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE is not supported")
-            // PerftestDevSupportManager(applicationContext)
+            // Should never happen as ExpoDefaultDevSupportManagerFactory is only used if useDevSupport = true
+            throw Error("ExpoDefaultDevSupportManagerFactory supports debug builds only. ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE is unsupported.")
+
+            // Original implementation
+            // https://github.com/facebook/react-native/blob/50273758510a6d756494d05dc91055516c2a6aca/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/devsupport/DefaultDevSupportManagerFactory.kt#L114
+
+            // React Native implementation uses PerftestDevSupportManager(applicationContext)
+            // but that's internal class we would have to vendor, so this impl re-throws.
+            // https://github.com/facebook/react-native/blob/50273758510a6d756494d05dc91055516c2a6aca/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/devsupport/PerftestDevSupportManager.kt#L17
         } else if (useDevSupport) {
             ExpoDevSupportManagerWithLogBoxOverride(
                 applicationContext,

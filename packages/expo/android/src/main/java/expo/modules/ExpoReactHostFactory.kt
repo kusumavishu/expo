@@ -23,6 +23,7 @@ import expo.modules.core.interfaces.ReactNativeHostHandler
 import com.facebook.react.runtime.internal.bolts.Task
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
+import expo.modules.logbox.ExpoLogBoxBuildConfig
 
 object ExpoReactHostFactory {
   private var reactHost: ReactHost? = null
@@ -127,17 +128,25 @@ object ExpoReactHostFactory {
         handler.onWillCreateReactInstance(useDevSupport)
       }
 
-      val reactHostImpl =
-        ReactHostImpl(
-          context,
-          reactHostDelegate,
-          componentFactory,
-          Executors.newSingleThreadExecutor(),
-          Task.UI_THREAD_EXECUTOR,
-          true,
-          useDeveloperSupport,
-          ExpoDefaultDevSupportManagerFactory(),
-        )
+      val reactHostImpl = when {
+        ExpoLogBoxBuildConfig.UNSTABLE_IS_ENABLED && useDeveloperSupport -> ReactHostImpl(
+            context,
+            reactHostDelegate,
+            componentFactory,
+            Executors.newSingleThreadExecutor(),
+            Task.UI_THREAD_EXECUTOR,
+            allowPackagerServerAccess = true,
+            useDevSupport = true,
+            devSupportManagerFactory = ExpoDefaultDevSupportManagerFactory(),
+          )
+        else -> ReactHostImpl(
+            context,
+            reactHostDelegate,
+            componentFactory,
+            true,
+            useDeveloperSupport
+          )
+      }
 
       hostHandlers.forEach { handler ->
         handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
