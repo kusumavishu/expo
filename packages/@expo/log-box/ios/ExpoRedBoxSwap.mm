@@ -12,31 +12,34 @@
   dispatch_once(&onceToken, ^{
     Class classs = [self class];
 
-    SEL originalSelector = @selector(showErrorMessage:);
-    SEL swizzledSelector = @selector(showErrorMessageWithExpoLogBox:);
+    SEL originalSelector = @selector(showErrorMessage:withParsedStack:isUpdate:errorCookie:);
+    SEL swizzledSelector = @selector(showErrorMessageWithExpoLogBox:withParsedStack:isUpdate:errorCookie:);
 
     Method originalMethod = class_getInstanceMethod(classs, originalSelector);
     Method swizzledMethod = class_getInstanceMethod(classs, swizzledSelector);
 
     BOOL didAddMethod =
-      class_addMethod(classs,
-                      originalSelector,
-                      method_getImplementation(swizzledMethod),
-                      method_getTypeEncoding(swizzledMethod));
+        class_addMethod(classs,
+                        originalSelector,
+                        method_getImplementation(swizzledMethod),
+                        method_getTypeEncoding(swizzledMethod));
 
     if (didAddMethod) {
-      class_replaceMethod(classs,
-                          swizzledSelector,
-                          method_getImplementation(originalMethod),
-                          method_getTypeEncoding(originalMethod));
+        class_replaceMethod(classs,
+                            swizzledSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod));
     } else {
-      method_exchangeImplementations(originalMethod, swizzledMethod);
+        method_exchangeImplementations(originalMethod, swizzledMethod);
     }
   });
 }
 
-- (void)showErrorMessageWithExpoLogBox:(NSString *)message {
-  UIViewController *expoRedBox = [ExpoLogBoxScreenProvider makeHostingControllerWithMessage:message];
+- (void)showErrorMessageWithExpoLogBox:(NSString *)message
+                       withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
+                              isUpdate: (BOOL) isUpdate
+                           errorCookie:(int)errorCookie {
+  UIViewController *expoRedBox = [ExpoLogBoxScreenProvider makeHostingControllerWithMessage:message stack:stack];
   [RCTKeyWindow().rootViewController presentViewController:expoRedBox animated:YES completion:nil];
 }
 

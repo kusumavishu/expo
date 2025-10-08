@@ -3,8 +3,8 @@ import WebKit
 import React
 
 @objc public class ExpoLogBoxScreenProvider: NSObject {
-    @objc public static func makeHostingController(message: String) -> UIViewController {
-        return ExpoLogBoxController(message: message)
+    @objc public static func makeHostingController(message: String?, stack: [RCTJSStackFrame]?) -> UIViewController {
+        return ExpoLogBoxController(message: message, stack:stack)
     }
 }
 
@@ -14,14 +14,26 @@ struct Colors {
 
 class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
     private var message: String
+    private var stack: [Dictionary<String, Any>]
 
-    init(message: String) {
-        self.message = message
+    init(message: String?, stack: [RCTJSStackFrame]?) {
+        self.message = message ?? "Error without message."
+        self.stack = stack?.map { frame in
+            return [
+                "file": frame.file ?? "unknown",
+                "methodName": frame.methodName ?? "unknown",
+                "arguments": [],
+                "lineNumber": frame.lineNumber,
+                "column": frame.column,
+                "collapse": frame.collapse,
+            ]
+        } ?? []
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         self.message = "If you see this message this is an issue in ExpoLogBox."
+        self.stack = []
         super.init(coder: coder)
     }
 
@@ -35,7 +47,7 @@ class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
             "nativeLogs": [
                 [
                     "message": self.message,
-                    "stack": [],
+                    "stack": self.stack,
                 ],
             ]
         ])
@@ -87,10 +99,6 @@ class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = body!.data(using: .utf8)
         }
-
-        // Perform async request
-        let semaphore = DispatchSemaphore(value: 0)
-        var result = "{}"
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
