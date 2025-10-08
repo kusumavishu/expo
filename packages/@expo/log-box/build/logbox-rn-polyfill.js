@@ -36,6 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const expo_1 = require("expo");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 // @ts-ignore
@@ -44,7 +45,6 @@ const LogBoxData = __importStar(require("react-native/Libraries/LogBox/Data/LogB
 const RCTModalHostViewNativeComponent_1 = __importDefault(require("react-native/Libraries/Modal/RCTModalHostViewNativeComponent"));
 const logbox_dom_polyfill_1 = __importDefault(require("./logbox-dom-polyfill"));
 const devServerEndpoints_1 = require("./utils/devServerEndpoints");
-const expo_1 = require("expo");
 const Modal = RCTModalHostViewNativeComponent_1.default;
 const Colors = {
     background: '#111113',
