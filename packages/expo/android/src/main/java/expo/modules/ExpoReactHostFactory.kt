@@ -20,7 +20,9 @@ import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
 import expo.modules.core.interfaces.ReactNativeHostHandler
+import com.facebook.react.runtime.internal.bolts.Task
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executors
 
 object ExpoReactHostFactory {
   private var reactHost: ReactHost? = null
@@ -130,8 +132,11 @@ object ExpoReactHostFactory {
           context,
           reactHostDelegate,
           componentFactory,
+          Executors.newSingleThreadExecutor(),
+          Task.UI_THREAD_EXECUTOR,
           true,
-          useDevSupport
+          useDeveloperSupport,
+          ExpoDefaultDevSupportManagerFactory(),
         )
 
       hostHandlers.forEach { handler ->
