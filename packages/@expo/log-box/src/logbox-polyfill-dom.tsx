@@ -19,12 +19,12 @@ export default function LogBoxPolyfillDOM({
   devServerUrl,
   ...props
 }: {
-  onCopyText: (text: string) => void;
-  fetchJsonAsync: (input: string, init?: {
+  onCopyText?: (text: string) => void;
+  fetchJsonAsync?: (input: string, init?: {
     method?: string;
     body?: string;
   }) => Promise<any>;
-  reloadRuntime: () => void;
+  reloadRuntime?: () => void;
   platform?: string;
   devServerUrl?: string;
   onDismiss?: (index: number) => void;
@@ -139,21 +139,24 @@ export default function LogBoxPolyfillDOM({
   globalThis.__polyfill_onCopyText = onCopyText;
   // @ts-ignore
   globalThis.__polyfill_platform = platform;
-  // @ts-ignore
-  globalThis.__polyfill_dom_fetchJsonAsync = async (url: string, options?: {
-    method?: string;
-    body?: string;
-  }) => {
-    const response = await fetchJsonAsync(url, options);
-    return JSON.parse(response);
-  };
-  // @ts-ignore
-  globalThis.__polyfill_dom_fetchAsync = async (url: string, options?: {
-    method?: string;
-    body?: string;
-  }) => {
-    return await fetchJsonAsync(url, options);
-  };
+  
+  if (fetchJsonAsync) {
+    // @ts-ignore
+    globalThis.__polyfill_dom_fetchJsonAsync = async (url: string, options?: {
+      method?: string;
+      body?: string;
+    }) => {
+      const response = await fetchJsonAsync(url, options);
+      return JSON.parse(response);
+    };
+    // @ts-ignore
+    globalThis.__polyfill_dom_fetchAsync = async (url: string, options?: {
+      method?: string;
+      body?: string;
+    }) => {
+      return await fetchJsonAsync(url, options);
+    };
+  }
   // @ts-ignore
   globalThis.__polyfill_dom_reloadRuntime = reloadRuntime;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');

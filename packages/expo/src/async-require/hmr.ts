@@ -244,8 +244,6 @@ To reconnect:
   },
 
   _onMetroError(data: unknown) {
-    // console.log('FIXTURE', data);
-
     if (!hmrClient) {
       return;
     }
