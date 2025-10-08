@@ -1,3 +1,5 @@
+#if EXPO_UNSTABLE_LOG_BOX
+
 #import <objc/runtime.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTUtils.h>
@@ -39,3 +41,5 @@
 }
 
 @end
+
+#endif
