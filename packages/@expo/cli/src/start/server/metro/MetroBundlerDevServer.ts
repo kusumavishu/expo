@@ -99,6 +99,7 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -1140,7 +1141,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       middleware.use(new InstallDevPackageMiddleware(this.projectRoot).getHandler());
 
       // For providing info to the error overlay.
-      middleware.use((req, res, next) => {
+      middleware.use((
+        req: ServerRequest,
+        res: ServerResponse,
+        next: ServerNext,
+      ) => {
         if (req.url?.startsWith('/_expo/error-overlay-meta')) {
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json');
