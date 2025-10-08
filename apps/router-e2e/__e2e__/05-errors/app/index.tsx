@@ -4,7 +4,7 @@ import { DimensionValue, Platform, ScrollView, Text, View } from 'react-native';
 import * as hmr_fixtures from './fixtures/hmr-fixtures';
 import HMRClient from 'expo/src/async-require/hmr';
 
-import DomButton from './DomButton';
+import DomButtonWithConsoleError from './DomButton';
 
 // import 'foobar';
 // eval('clasfs Foo {}');
@@ -64,15 +64,11 @@ export default function App() {
           console.error(new Error('Hello'));
         }}
       />
-      <DomButton
+      <DomButtonWithConsoleError
+        // NOTE: Both original and the new implementation shows RedBox in the DOM Component.
+        // This should be redirected to the host app in the future.
         title="console.error: Error (DOM)"
-        onPress={() => {
-          console.error(new Error('Hello from DOM'));
-        }}
-        dom={{
-          useExpoDOMWebView: true,
-          matchContents: true,
-        }}
+        dom={{matchContents: true}}
       />
 
       <Headline>From render:</Headline>
