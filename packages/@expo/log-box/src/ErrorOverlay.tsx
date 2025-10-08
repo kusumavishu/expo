@@ -386,7 +386,7 @@ function ErrorOverlayFooter({ message }: { message?: string }) {
   );
 }
 
-const SHOW_MORE_MESSAGE_LENGTH = 300;
+const SHOW_MORE_MESSAGE_LENGTH = 500;
 
 function ErrorMessageHeader(props: {
   collapsed: boolean;
@@ -426,7 +426,7 @@ function ErrorMessageHeader(props: {
           fontSize: 16,
           whiteSpace: 'pre-wrap',
           fontWeight: '500',
-          wordBreak: 'break-all',
+          wordBreak: 'normal',
         }}>
         <LogBoxMessage
           maxLength={props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity}

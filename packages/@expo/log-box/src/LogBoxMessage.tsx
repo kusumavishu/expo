@@ -10,10 +10,6 @@ import type { StyleProp, TextStyle } from 'react-native';
 
 import type { Message } from './Data/parseLogBoxLog';
 
-const cleanContent = (content: string) => content;
-// const cleanContent = (content: string) =>
-//   content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
-
 export function LogBoxMessage(props: { message: Message; maxLength?: number }): React.ReactElement {
   const { content, substitutions }: Message = props.message;
 
@@ -22,7 +18,7 @@ export function LogBoxMessage(props: { message: Message; maxLength?: number }): 
   const elements: React.ReactElement[] = [];
   let length = 0;
   const createUnderLength = (key: string | '-1', message: string, style?: StyleProp<TextStyle>) => {
-    let cleanMessage = cleanContent(message);
+    let cleanMessage = message;
 
     if (props.maxLength != null) {
       cleanMessage = cleanMessage.slice(0, props.maxLength - length);

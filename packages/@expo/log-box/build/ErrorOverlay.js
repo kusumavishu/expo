@@ -234,10 +234,10 @@ function LogBoxContent({ log, selectedLogIndex, logs, isDismissable, onMinimize,
             (react_1.default.createElement("div", { style: { padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' } },
                 codeFrames.map(([key, codeFrame]) => (react_1.default.createElement(ErrorCodeFrame_1.ErrorCodeFrame, { key: key, projectRoot: projectRoot, codeFrame: codeFrame }))),
                 log.isMissingModuleError && (react_1.default.createElement(InstallMissingModule, { moduleName: log.isMissingModuleError, projectRoot: projectRoot ?? '' })),
-                !!log?.componentStack?.length && (react_1.default.createElement(StackTraceList_1.StackTraceList, { type: "component", projectRoot: projectRoot ?? '', stack: log.getAvailableStack('component'), symbolicationStatus: log.getStackStatus('component'), 
+                !!log?.componentStack?.length && (react_1.default.createElement(StackTraceList_1.StackTraceList, { key: selectedLogIndex + '-component-stack', type: "component", projectRoot: projectRoot ?? '', stack: log.getAvailableStack('component'), symbolicationStatus: log.getStackStatus('component'), 
                     // eslint-disable-next-line react/jsx-no-bind
                     onRetry: _handleRetry.bind(_handleRetry, 'component') })),
-                react_1.default.createElement(StackTraceList_1.StackTraceList, { type: "stack", projectRoot: projectRoot ?? '', stack: log.getAvailableStack('stack'), symbolicationStatus: log.getStackStatus('stack'), 
+                react_1.default.createElement(StackTraceList_1.StackTraceList, { key: selectedLogIndex + '-stack', type: "stack", projectRoot: projectRoot ?? '', stack: log.getAvailableStack('stack'), symbolicationStatus: log.getStackStatus('stack'), 
                     // eslint-disable-next-line react/jsx-no-bind
                     onRetry: _handleRetry.bind(_handleRetry, 'stack') }))),
             !isDismissable && (react_1.default.createElement(ErrorOverlayFooter, { message: "Build-time errors can only be dismissed by fixing the issue." })))));
@@ -269,7 +269,7 @@ function ErrorOverlayFooter({ message }) {
                     fontFamily: 'var(--expo-log-font-family)',
                 } }, message))));
 }
-const SHOW_MORE_MESSAGE_LENGTH = 300;
+const SHOW_MORE_MESSAGE_LENGTH = 500;
 function ErrorMessageHeader(props) {
     return (react_1.default.createElement("div", { style: {
             padding: '0 1rem',
@@ -294,7 +294,7 @@ function ErrorMessageHeader(props) {
                 fontSize: 16,
                 whiteSpace: 'pre-wrap',
                 fontWeight: '500',
-                wordBreak: 'break-all',
+                wordBreak: 'normal',
             } },
             react_1.default.createElement(LogBoxMessage_1.LogBoxMessage, { maxLength: props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity, message: props.message }),
             react_1.default.createElement(ShowMoreButton, { ...props }))));

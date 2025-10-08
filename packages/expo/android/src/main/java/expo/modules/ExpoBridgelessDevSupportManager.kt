@@ -21,6 +21,9 @@ import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import expo.modules.logbox.ExpoLogBoxSurfaceDelegate
+import com.facebook.react.devsupport.StackTraceHelper.convertJavaStackTrace
+import com.facebook.react.devsupport.StackTraceHelper.convertJsStackTrace
+import com.facebook.react.devsupport.interfaces.StackFrame
 
 /**
  * An implementation of [DevSupportManager] that extends the functionality in
@@ -101,17 +104,17 @@ internal class ExpoDevSupportManagerWithLogBoxOverride(
     }
 
     override fun showNewJavaError(message: String?, e: Throwable) {
-        showNewError(message)
+        showNewError(message, convertJavaStackTrace(e))
     }
 
     override fun showNewJSError(message: String?, details: ReadableArray?, errorCookie: Int) {
-        showNewError(message)
+        showNewError(message, convertJsStackTrace(details))
     }
 
-    private fun showNewError(message: String?) {
+    private fun showNewError(message: String?, stack: Array<StackFrame>) {
         UiThreadUtil.runOnUiThread {
-            // NOTE(@krystofwoldrich): Should we keep also other context of the error?
             lastErrorTitle = message
+            lastErrorStack = stack
 
             if (redBoxSurfaceDelegate == null) {
                 this.redBoxSurfaceDelegate =

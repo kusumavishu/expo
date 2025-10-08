@@ -33,7 +33,10 @@ class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
         let webViewWrapper = ExpoLogBoxWebViewWrapper(nativeActions: self, props: [
             "platform": "ios",
             "nativeLogs": [
-                self.message,
+                [
+                    "message": self.message,
+                    "stack": [],
+                ],
             ]
         ])
         let webView = webViewWrapper.prepareWebView()

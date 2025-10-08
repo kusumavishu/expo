@@ -12,9 +12,6 @@ exports.LogBoxMessage = LogBoxMessage;
  * LICENSE file in the root directory of this source tree.
  */
 const react_1 = __importDefault(require("react"));
-const cleanContent = (content) => content;
-// const cleanContent = (content: string) =>
-//   content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
 function LogBoxMessage(props) {
     const { content, substitutions } = props.message;
     const maxLength = props.maxLength != null ? props.maxLength : Infinity;
@@ -22,7 +19,7 @@ function LogBoxMessage(props) {
     const elements = [];
     let length = 0;
     const createUnderLength = (key, message, style) => {
-        let cleanMessage = cleanContent(message);
+        let cleanMessage = message;
         if (props.maxLength != null) {
             cleanMessage = cleanMessage.slice(0, props.maxLength - length);
         }

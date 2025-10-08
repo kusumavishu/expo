@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { DimensionValue, Platform, ScrollView, Text, View } from 'react-native';
 
 import * as hmr_fixtures from '@expo/metro-runtime/fixtures/hmr-fixtures';
 // TODO: How to import for testing?
@@ -12,7 +12,10 @@ import { DomButton } from './DomButton';
 export default function App() {
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: 'white' }}
+      style={[
+        { flex: 1, backgroundColor: 'white', height: 'auto' },
+        Platform.select({web: { maxHeight: ('100vh' as DimensionValue) }})
+      ]}
       contentContainerStyle={{ gap: 8, padding: 48 }}
       contentInsetAdjustmentBehavior="automatic">
       <BigButton

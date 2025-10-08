@@ -145,7 +145,17 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
                 super.onPageStarted(view, url, favicon)
 
                 val errorMessage = devSupportManager.lastErrorTitle
-                val errorMessages = errorMessage?.let { arrayOf(it) } ?: emptyArray<String>()
+                val errorStack = devSupportManager.lastErrorStack?.map { frame ->
+                    mapOf(
+                        // Expected to match https://github.com/expo/expo/blob/5ed042a3547571fa70cf1d53db7c12b4bb966a90/packages/%40expo/log-box/src/devServerEndpoints.ts#L3
+                        "file" to frame.file,
+                        "methodName" to frame.method,
+                        "arguments" to emptyArray<String>(),
+                        "lineNumber" to frame.line,
+                        "column" to frame.column,
+                        "collapse" to frame.isCollapsed,
+                    )
+                }
 
                 val initialProps = mapOf(
                     "names" to arrayOf(
@@ -154,7 +164,10 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
                     ),
                     "props" to mapOf(
                         "platform" to "android",
-                        "nativeLogs" to errorMessages
+                        "nativeLogs" to arrayOf(mapOf(
+                            "message" to errorMessage,
+                            "stack" to errorStack,
+                        )),
                     ),
                 )
 
@@ -174,7 +187,7 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
 
         webView?.loadUrl("file:///android_asset/ExpoLogBox.bundle/index.html")
         // TODO: use build config to specify the dev url
-        // webView.loadUrl("http://10.0.2.2:8082/")
+        // webView.loadUrl("http://10.0.2.2:8090/")
 
         rootContainer.addView(webView)
         dialog?.setContentView(rootContainer)

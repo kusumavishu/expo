@@ -36,8 +36,8 @@ export default function LogBoxPolyfillDOM({
   dom?: import('expo/dom/internal').DOMPropsInternal;
 }) {
   const logs = React.useMemo(() => {
-    // Convert from React Native style to Expo style LogBoxLog
     return [
+      // Convert from React Native style to Expo style LogBoxLog
       ...(props.logs?.map(
         ({ symbolicated, symbolicatedComponentStack, codeFrame, componentCodeFrame, ...log }) => {
           const outputCodeFrame: Partial<Record<StackType, CodeFrame>> = {};
@@ -98,16 +98,23 @@ export default function LogBoxPolyfillDOM({
         }
       ) ?? []),
       // Convert native logs to Expo Log Box format
-      ...((props.nativeLogs?.map((message) => {
-        let originalMessage = message;
+      ...((props.nativeLogs?.map(({ message, stack }) => {
+        let processedMessage = message;
+        let processedStack = stack || [];
+
+        if (processedMessage.startsWith('Unable to load script.')) {
+          // Unable to load script native JVM stack is not useful.
+          processedStack = [];
+        }
+
         if (platform === 'android') {
           try {
-              const bodyIndex = originalMessage.indexOf("Body:");
+              const bodyIndex = processedMessage.indexOf("Body:");
               if (bodyIndex !== -1) {
-                const originalJson = originalMessage.slice(bodyIndex + 5);
+                const originalJson = processedMessage.slice(bodyIndex + 5);
                 if (originalJson) {
                   const originalErrorResponseBody = JSON.parse(originalJson);
-                  originalMessage = originalErrorResponseBody.message;
+                  processedMessage = originalErrorResponseBody.message;
                 }
               }
           } catch (e) {
@@ -116,8 +123,8 @@ export default function LogBoxPolyfillDOM({
         }
 
         const log = new LogBoxLog(parseLogBoxException({
-          originalMessage,
-          stack: [],
+          originalMessage: processedMessage,
+          stack: processedStack,
         }));
         // Never show stack for native errors, these are typically bundling errors, component stack would lead to LogBox.
         log.componentStack = [];
