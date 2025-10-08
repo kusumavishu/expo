@@ -11,7 +11,7 @@ import * as hmr_fixtures from '@expo/metro-runtime/fixtures/hmr-fixtures';
 export default function App() {
   return (
     <ScrollView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: 'white' }}
       contentContainerStyle={{ gap: 8, padding: 48 }}
       contentInsetAdjustmentBehavior="automatic">
       <BigButton
