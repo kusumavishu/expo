@@ -158,7 +158,6 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
 
   const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
   if (babelTransformError) {
-    debugger;
     // Transform errors are thrown from inside the Babel transformer.
     const [fileName, content, row, column, codeFrame] = babelTransformError.slice(1);
 
@@ -186,9 +185,7 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
   }
 
   const babelCodeFrameError = message.match(BABEL_CODE_FRAME_ERROR_FORMAT);
-
   if (babelCodeFrameError) {
-    debugger;
     // Codeframe errors are thrown from any use of buildCodeFrameError.
     const [fileName, content, codeFrame] = babelCodeFrameError.slice(1);
     return {
@@ -212,7 +209,6 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
   }
 
   if (message.match(/^TransformError /)) {
-    debugger;
     return {
       level: 'syntax',
       stack: error.stack,
@@ -240,7 +236,6 @@ export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogDat
   }
 
   if (componentStack != null) {
-    debugger;
     // It is possible that console errors have a componentStack.
     return {
       level: 'error',

@@ -244,15 +244,15 @@ function useStackTraceLimit(limit: number) {
   const current = React.useRef(0);
   React.useEffect(() => {
     try {
-      // @ts-expect-error: StackTraceLimit is not defined in the Error type
+      // @ts-ignore: StackTraceLimit is not defined in the Error type
       const currentLimit = Error.stackTraceLimit;
-      // @ts-expect-error: StackTraceLimit is not defined in the Error type
+      // @ts-ignore: StackTraceLimit is not defined in the Error type
       Error.stackTraceLimit = limit;
       current.current = currentLimit;
     } catch {}
     return () => {
       try {
-        // @ts-expect-error: StackTraceLimit is not defined in the Error type
+        // @ts-ignore: StackTraceLimit is not defined in the Error type
         Error.stackTraceLimit = current.current;
       } catch {}
     };

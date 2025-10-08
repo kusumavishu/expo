@@ -1,3 +1,4 @@
+import React from 'react';
 import { createContext, useContext, ReactNode } from 'react';
 
 interface ActionsContextType {
@@ -27,6 +28,7 @@ export const withActions = (Component: React.FC, actions: ActionsContextType) =>
 export const useActions = (): ActionsContextType => {
   const context = useContext(ActionsContext);
   if (context === undefined) {
+    // return { onMinimize: undefined };
     throw new Error('useActions must be used within an ActionsProvider');
   }
   return context;

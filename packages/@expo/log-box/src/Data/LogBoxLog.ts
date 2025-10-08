@@ -31,6 +31,17 @@ export type LogBoxLogData = {
   isMissingModuleError?: string;
 };
 
+export type LogBoxLogDataLegacy = {
+  level: LogLevel;
+  type?: string;
+  message: Message;
+  stack: MetroStackFrame[];
+  category: string;
+  componentStack: CodeFrame[];
+  codeFrame?: CodeFrame;
+  isComponentError: boolean;
+};
+
 export type StackType = 'stack' | 'component';
 
 type SymbolicationCallback = (status: SymbolicationStatus) => void;

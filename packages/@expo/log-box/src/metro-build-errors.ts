@@ -1,4 +1,4 @@
-import type { LogBoxLogData } from './Data/LogBoxLog';
+import type { LogBoxLogData, LogBoxLogDataLegacy } from './Data/LogBoxLog';
 import { parseInterpolation } from './Data/parseLogBoxLog';
 import { parseErrorStack } from './devServerEndpoints';
 
@@ -95,7 +95,7 @@ const BABEL_TRANSFORM_ERROR_FORMAT =
   /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
 
 const BABEL_CODE_FRAME_ERROR_FORMAT =
-  /^(?:TransformError )?(?:.*):? (?:.*?)([/|\\].*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
+  /^(?:TransformError )?(?:.*):? (?:.*?)([/|\\].*): ([\s\S]+?)\n((?:[ >]*\d+[\s|]+[^\n]*\n?)+|\u{001b}\[[0-9;]*m(?:.*\n?)+?(?=\n\n|\n[^\u{001b}\s]|$))/mu;
 
 export class MetroTransformError extends MetroBuildError {
   public codeFrame: string | undefined;
@@ -214,6 +214,15 @@ export class MetroPackageResolutionError extends MetroBuildError {
       // @ts-ignore
       isMissingModuleError: this.cause?.dirPaths ? this.targetModuleName : undefined,
       category: `${this.originModulePath}-${1}-${1}`,
+    };
+  }
+
+  toLogBoxLogDataLegacy(): LogBoxLogDataLegacy {
+    const logBoxLogData = this.toLogBoxLogData();
+    return {
+      ...logBoxLogData,
+      componentStack: [],
+      codeFrame: logBoxLogData.codeFrame?.stack || undefined,
     };
   }
 }

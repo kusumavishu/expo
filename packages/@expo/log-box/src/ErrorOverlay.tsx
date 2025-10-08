@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { use, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog, useLogs, type LogLevel, type StackType } from './Data/LogBoxLog';

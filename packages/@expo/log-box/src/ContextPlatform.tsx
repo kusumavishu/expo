@@ -1,3 +1,4 @@
+import React from 'react';
 import { createContext, useContext, ReactNode, useMemo } from 'react';
 
 interface RuntimePlatformContextType {
@@ -30,6 +31,7 @@ export const withRuntimePlatform = (Component: React.FC, options: { platform: st
 export const useRuntimePlatform = (): RuntimePlatformContextType => {
   const context = useContext(RuntimePlatformContext);
   if (context === undefined) {
+    // return { platform: 'web', isNative: false };
     throw new Error('useRuntimePlatform must be used within a RuntimePlatformProvider');
   }
   return context;
