@@ -51,18 +51,23 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
             fatalError("Failed to serialize initProps. This is an issue in ExpoLogBox. Please report it.")
         }
 
-        guard let bundleUrl = RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "unused.name"),
-              let scheme = bundleUrl.scheme,
-              let host = bundleUrl.host,
-              let port = bundleUrl.port else {
-          fatalError("Failed to extract bundleUrl scheme, host, or port. LogBox should not be initialized without dev server host (a.k.a in Release builds.). This might be an issue in ExpoLogBox. Please report it.")
-        }
-        let devServerOrigin = "\(scheme)://\(host):\(port)"
+        let devServerOrigin: String? = {
+            guard let bundleUrl = RCTBundleURLProvider.sharedSettings()
+                    .jsBundleURL(forBundleRoot: "unused.name"),
+                  let scheme = bundleUrl.scheme,
+                  let host = bundleUrl.host,
+                  let port = bundleUrl.port
+            else {
+                return nil
+            }
+            return "\(scheme)://\(host):\(port)"
+        }()
+        let devServerOriginJsValue: String = devServerOrigin.map { "'\($0)'" } ?? "undefined"
 
         let injectJavascript = """
             var process = globalThis.process || {};
             process.env = process.env || {};
-            process.env.EXPO_DEV_SERVER_ORIGIN = '\(devServerOrigin)';
+            process.env.EXPO_DEV_SERVER_ORIGIN = \(devServerOriginJsValue);
             window.$$EXPO_INITIAL_PROPS = \(initPropsStringified);
             window.ReactNativeWebView = {};
             window.ReactNativeWebView.postMessage = (message) => {
