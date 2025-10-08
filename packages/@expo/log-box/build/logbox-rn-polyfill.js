@@ -38,13 +38,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
-const logbox_dom_polyfill_1 = __importDefault(require("./logbox-dom-polyfill"));
 // @ts-ignore
 const LogBoxData = __importStar(require("react-native/Libraries/LogBox/Data/LogBoxData"));
 // @ts-ignore
 const RCTModalHostViewNativeComponent_1 = __importDefault(require("react-native/Libraries/Modal/RCTModalHostViewNativeComponent"));
+const logbox_dom_polyfill_1 = __importDefault(require("./logbox-dom-polyfill"));
+const devServerEndpoints_1 = require("./utils/devServerEndpoints");
 const expo_1 = require("expo");
-const devServerEndpoints_1 = require("./devServerEndpoints");
 const Modal = RCTModalHostViewNativeComponent_1.default;
 const Colors = {
     background: '#111113',
@@ -78,9 +78,11 @@ function LogBoxRNPolyfill(props) {
     };
     const onMinimize = () => closeModal(props.onMinimize);
     const onDismiss = props.onDismiss;
-    const LogBoxWrapper = (0, react_1.useMemo)(() => (react_native_1.Platform.OS === 'ios') ? ({ children }) => {
-        return (react_1.default.createElement(Modal, { animationType: "slide", presentationStyle: "pageSheet", visible: open, onRequestClose: onMinimize }, children));
-    } : ({ children }) => react_1.default.createElement(react_1.default.Fragment, null, children), []);
+    const LogBoxWrapper = (0, react_1.useMemo)(() => react_native_1.Platform.OS === 'ios'
+        ? ({ children }) => {
+            return (react_1.default.createElement(Modal, { animationType: "slide", presentationStyle: "pageSheet", visible: open, onRequestClose: onMinimize }, children));
+        }
+        : ({ children }) => react_1.default.createElement(react_1.default.Fragment, null, children), []);
     return (react_1.default.createElement(LogBoxWrapper, null,
         react_1.default.createElement(react_native_1.View, { style: {
                 backgroundColor: react_native_1.Platform.select({ default: undefined, ios: Colors.background }),
@@ -104,7 +106,7 @@ function LogBoxRNPolyfill(props) {
                     },
                     suppressMenuItems: ['underline', 'lookup', 'translate'],
                     bounces: true,
-                    overScrollMode: "never",
+                    overScrollMode: 'never',
                 }, fetchJsonAsync: async (input, init) => {
                     try {
                         const res = await fetch(input, init);
@@ -123,7 +125,7 @@ function LogBoxRNPolyfill(props) {
                     react_native_1.Clipboard.setString(text);
                 }, onDismiss: onDismiss, onMinimize: onMinimize, onChangeSelectedIndex: props.onChangeSelectedIndex, selectedIndex: props.selectedIndex, logs: logs }))));
 }
-function LogBoxInspectorContainer({ selectedLogIndex, logs }) {
+function LogBoxInspectorContainer({ selectedLogIndex, logs, }) {
     const handleDismiss = (index) => {
         LogBoxData.dismiss(logs[index]);
     };

@@ -7,42 +7,17 @@
  */
 import React from 'react';
 
-import {
-  symbolicateStackAndCacheAsync,
-  invalidateCachedStack,
-  type MetroStackFrame,
-} from '../devServerEndpoints';
-import type { Category, Message, CodeFrame } from './parseLogBoxLog';
-
-
-export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
-
-export type LogLevel = 'error' | 'fatal' | 'syntax' | 'resolution' | 'static';
-
-export type LogBoxLogData = {
-  level: LogLevel;
-  type?: string;
-  message: Message;
-  stack: MetroStackFrame[];
-  category: string;
-  componentStack: MetroStackFrame[];
-  codeFrame: Partial<Record<StackType, CodeFrame>>;
-  isComponentError: boolean;
-  isMissingModuleError?: string;
-};
-
-export type LogBoxLogDataLegacy = {
-  level: LogLevel;
-  type?: string;
-  message: Message;
-  stack: MetroStackFrame[];
-  category: string;
-  componentStack: CodeFrame[];
-  codeFrame?: CodeFrame;
-  isComponentError: boolean;
-};
-
-export type StackType = 'stack' | 'component';
+import type {
+  LogLevel,
+  Message,
+  Category,
+  CodeFrame,
+  SymbolicationStatus,
+  StackType,
+  LogBoxLogData,
+  MetroStackFrame,
+} from './Types';
+import { symbolicateStackAndCacheAsync, invalidateCachedStack } from '../utils/devServerEndpoints';
 
 type SymbolicationCallback = (status: SymbolicationStatus) => void;
 
@@ -95,8 +70,6 @@ export class LogBoxLog {
     this.count = 1;
     this.symbolicated = data.symbolicated ?? this.symbolicated;
     this.isMissingModuleError = data.isMissingModuleError;
-    // Create unsymbolidated fixture:
-    // console.log('LogBoxLog', JSON.stringify(data, null, 2));
   }
 
   incrementCount(): void {

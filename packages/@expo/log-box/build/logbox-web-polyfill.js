@@ -8,7 +8,7 @@ const LogBoxLog_1 = require("./Data/LogBoxLog");
 const logbox_dom_polyfill_1 = __importDefault(require("./logbox-dom-polyfill"));
 exports.default = () => {
     const { logs, selectedLogIndex } = useLogsFromExpoStaticError();
-    return (react_1.default.createElement(logbox_dom_polyfill_1.default, { logs: logs, selectedIndex: selectedLogIndex, platform: 'web' }));
+    return react_1.default.createElement(logbox_dom_polyfill_1.default, { logs: logs, selectedIndex: selectedLogIndex, platform: "web" });
 };
 function useLogsFromExpoStaticError() {
     if (process.env.EXPO_OS === 'web' && typeof window !== 'undefined') {

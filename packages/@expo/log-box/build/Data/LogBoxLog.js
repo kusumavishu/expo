@@ -13,7 +13,7 @@ exports.useLogs = useLogs;
  * LICENSE file in the root directory of this source tree.
  */
 const react_1 = __importDefault(require("react"));
-const devServerEndpoints_1 = require("../devServerEndpoints");
+const devServerEndpoints_1 = require("../utils/devServerEndpoints");
 class LogBoxLog {
     message;
     type;
@@ -50,8 +50,6 @@ class LogBoxLog {
         this.count = 1;
         this.symbolicated = data.symbolicated ?? this.symbolicated;
         this.isMissingModuleError = data.isMissingModuleError;
-        // Create unsymbolidated fixture:
-        // console.log('LogBoxLog', JSON.stringify(data, null, 2));
     }
     incrementCount() {
         this.count += 1;

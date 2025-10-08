@@ -8,12 +8,8 @@
  * Based on this but with web support:
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
+import { parseWebHmrBuildErrors, type MetroBuildError } from '@expo/log-box';
 import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
-import {
-  MetroBuildError,
-  MetroPackageResolutionError,
-  MetroTransformError,
-} from '@expo/log-box/src/metro-build-errors';
 import prettyFormat, { plugins } from 'pretty-format';
 import { DeviceEventEmitter } from 'react-native';
 
@@ -266,63 +262,10 @@ To reconnect:
       }
     }
 
-    const message = [
-      // @ts-expect-error
-      data.type,
-      // @ts-expect-error
-      data.message,
-    ]
-      .filter(Boolean)
-      .join(' ');
-
-    const type: string | undefined = (data as any).type;
-    const errors: any[] | undefined = (data as any).errors;
-
     // Fallback for resolution errors which don't return a type
     // https://github.com/facebook/metro/blob/a3fac645dc377f78bd4182ca0ca73629b2707d5b/packages/metro/src/lib/formatBundlingError.js#L65-L73
     // https://github.com/facebook/metro/pull/1487
-    let error: MetroBuildError;
-    if (
-      'originModulePath' in data &&
-      typeof data.originModulePath === 'string' &&
-      'targetModuleName' in data &&
-      typeof data.targetModuleName === 'string' &&
-      'cause' in data
-    ) {
-      error = new MetroPackageResolutionError(
-        message,
-        type,
-        errors,
-        data.originModulePath,
-        data.targetModuleName,
-        // @ts-expect-error
-        data.cause
-      );
-    } else if (type === 'TransformError') {
-      assert(
-        'lineNumber' in data,
-        '[Internal] Expected lineNumber to be in Metro HMR error update'
-      );
-      assert('column' in data, '[Internal] Expected column to be in Metro HMR error update');
-      assert('filename' in data, '[Internal] Expected filename to be in Metro HMR error update');
-
-      error = new MetroTransformError(
-        message,
-        type,
-        errors!,
-        // @ts-ignore
-        data.lineNumber,
-        data.column,
-        data.filename
-      );
-    } else {
-      error = new MetroBuildError(message, type, errors);
-    }
-
-    // TODO: Add import stack to the error: EXPO_METRO_UNSTABLE_ERRORS=1
-    // if ('stack' in data && typeof data.stack === 'string') {
-    //   error.stack = stripAnsi(data.stack);
-    // }
+    const error = parseWebHmrBuildErrors(data);
 
     buildErrorQueue.add(error);
 

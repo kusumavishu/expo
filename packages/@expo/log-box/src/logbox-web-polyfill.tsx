@@ -1,13 +1,12 @@
 import React from 'react';
+
 import { LogBoxLog, useLogs } from './Data/LogBoxLog';
 import LogBoxInspectorContainer from './logbox-dom-polyfill';
 
 export default () => {
   const { logs, selectedLogIndex } = useLogsFromExpoStaticError();
 
-  return (
-    <LogBoxInspectorContainer logs={logs} selectedIndex={selectedLogIndex} platform='web' />
-  );
+  return <LogBoxInspectorContainer logs={logs} selectedIndex={selectedLogIndex} platform="web" />;
 };
 
 function useLogsFromExpoStaticError(): ReturnType<typeof useLogs> {
@@ -23,5 +22,7 @@ function useLogsFromExpoStaticError(): ReturnType<typeof useLogs> {
     }
   }
 
-  throw new Error('`useLogsFromExpoStaticError` must be used within a document with `_expo-static-error` element.');
+  throw new Error(
+    '`useLogsFromExpoStaticError` must be used within a document with `_expo-static-error` element.'
+  );
 }

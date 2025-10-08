@@ -1,5 +1,4 @@
-import React from 'react';
-import { createContext, useContext, ReactNode, useMemo } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 
 interface RuntimePlatformContextType {
   platform?: string;
@@ -8,7 +7,10 @@ interface RuntimePlatformContextType {
 
 const RuntimePlatformContext = createContext<RuntimePlatformContextType | undefined>(undefined);
 
-export const RuntimePlatformProvider: React.FC<{ children: ReactNode; platform?: string }> = ({ children, platform }) => {
+export const RuntimePlatformProvider: React.FC<{ children: ReactNode; platform?: string }> = ({
+  children,
+  platform,
+}) => {
   const isNative = useMemo(() => {
     return platform === 'ios' || platform === 'android';
   }, [platform]);

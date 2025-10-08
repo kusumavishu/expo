@@ -1,33 +1,28 @@
+import { isRunningInExpoGo } from 'expo';
 import React, { useMemo } from 'react';
-
-import { View, DevSettings, Platform, Clipboard, type Modal as ModalInterface} from 'react-native';
-
-import LogBoxPolyfillDOM from './logbox-dom-polyfill';
-
+import { View, DevSettings, Platform, Clipboard, type Modal as ModalInterface } from 'react-native';
 // @ts-ignore
 import * as LogBoxData from 'react-native/Libraries/LogBox/Data/LogBoxData';
-import { LogBoxLog } from './Data/LogBoxLog';
-
 // @ts-ignore
 import RCTModalHostView from 'react-native/Libraries/Modal/RCTModalHostViewNativeComponent';
-import { isRunningInExpoGo } from 'expo';
-import { getBaseUrl } from './devServerEndpoints';
+
+import { LogBoxLog } from './Data/LogBoxLog';
+import LogBoxPolyfillDOM from './logbox-dom-polyfill';
+import { getBaseUrl } from './utils/devServerEndpoints';
 
 const Modal = RCTModalHostView as typeof ModalInterface;
 
 const Colors = {
   background: '#111113',
-}
+};
 
-function LogBoxRNPolyfill(
-  props: {
-    onDismiss: (index: number) => void;
-    onMinimize: () => void;
-    onChangeSelectedIndex: (index: number) => void;
-    logs: any[];
-    selectedIndex: number;
-  }
-) {
+function LogBoxRNPolyfill(props: {
+  onDismiss: (index: number) => void;
+  onMinimize: () => void;
+  onChangeSelectedIndex: (index: number) => void;
+  logs: any[];
+  selectedIndex: number;
+}) {
   const logs = React.useMemo(() => {
     return props.logs.map((log) => {
       return {
@@ -60,18 +55,23 @@ function LogBoxRNPolyfill(
   const onMinimize = () => closeModal(props.onMinimize);
   const onDismiss = props.onDismiss;
 
-  const LogBoxWrapper = useMemo(() => (Platform.OS === 'ios') ? ({ children }: { children: React.ReactNode }) => {
-    return (
-    <Modal
-      animationType="slide"
-      presentationStyle="pageSheet"
-      visible={open}
-      onRequestClose={onMinimize}
-      >
-        {children}
-      </Modal>
-    );
-  } : ({children}: { children: React.ReactNode }) => <>{children}</>, []);
+  const LogBoxWrapper = useMemo(
+    () =>
+      Platform.OS === 'ios'
+        ? ({ children }: { children: React.ReactNode }) => {
+            return (
+              <Modal
+                animationType="slide"
+                presentationStyle="pageSheet"
+                visible={open}
+                onRequestClose={onMinimize}>
+                {children}
+              </Modal>
+            );
+          }
+        : ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    []
+  );
 
   return (
     <LogBoxWrapper>
@@ -82,8 +82,7 @@ function LogBoxRNPolyfill(
           top: 0,
           flex: 1,
         }}
-        collapsable={false}
-      >
+        collapsable={false}>
         <LogBoxPolyfillDOM
           platform={process.env.EXPO_OS}
           devServerUrl={getBaseUrl()}
@@ -103,7 +102,7 @@ function LogBoxRNPolyfill(
             },
             suppressMenuItems: ['underline', 'lookup', 'translate'],
             bounces: true,
-            overScrollMode: "never",
+            overScrollMode: 'never',
           }}
           fetchJsonAsync={async (input, init) => {
             try {
@@ -136,11 +135,11 @@ function LogBoxRNPolyfill(
 
 function LogBoxInspectorContainer({
   selectedLogIndex,
-  logs
+  logs,
 }: {
-    logs: LogBoxLog[],
-    selectedLogIndex: number,
-    isDisabled?: boolean,
+  logs: LogBoxLog[];
+  selectedLogIndex: number;
+  isDisabled?: boolean;
 }) {
   const handleDismiss = (index: number) => {
     LogBoxData.dismiss(logs[index]);

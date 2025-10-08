@@ -6,32 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { type MetroStackFrame } from '../devServerEndpoints';
-import type { Category, Message, CodeFrame } from './parseLogBoxLog';
-export type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
-export type LogLevel = 'error' | 'fatal' | 'syntax' | 'resolution' | 'static';
-export type LogBoxLogData = {
-    level: LogLevel;
-    type?: string;
-    message: Message;
-    stack: MetroStackFrame[];
-    category: string;
-    componentStack: MetroStackFrame[];
-    codeFrame: Partial<Record<StackType, CodeFrame>>;
-    isComponentError: boolean;
-    isMissingModuleError?: string;
-};
-export type LogBoxLogDataLegacy = {
-    level: LogLevel;
-    type?: string;
-    message: Message;
-    stack: MetroStackFrame[];
-    category: string;
-    componentStack: CodeFrame[];
-    codeFrame?: CodeFrame;
-    isComponentError: boolean;
-};
-export type StackType = 'stack' | 'component';
+import type { LogLevel, Message, Category, CodeFrame, SymbolicationStatus, StackType, LogBoxLogData, MetroStackFrame } from './Types';
 type SymbolicationResult = {
     error: null;
     stack: null;

@@ -1,14 +1,15 @@
 'use dom';
 
-import { LogBoxInspectorContainer } from './ErrorOverlay';
-import { LogBoxLog, LogContext, StackType } from './Data/LogBoxLog';
-import * as LogBoxData from './Data/LogBoxData';
-
 import React from 'react';
-import type { CodeFrame } from './devServerEndpoints';
-import { parseLogBoxException } from './Data/parseLogBoxLog';
-import { RuntimePlatformProvider } from './ContextPlatform';
+
 import { ActionsProvider } from './ContextActions';
+import { RuntimePlatformProvider } from './ContextPlatform';
+import * as LogBoxData from './Data/LogBoxData';
+import { LogBoxLog, LogContext } from './Data/LogBoxLog';
+import type { StackType } from './Data/Types';
+import { parseLogBoxException } from './Data/parseLogBoxLog';
+import { LogBoxInspectorContainer } from './overlay/Overlay';
+import type { CodeFrame } from './utils/devServerEndpoints';
 
 export default function LogBoxPolyfillDOM({
   onMinimize,
@@ -20,10 +21,13 @@ export default function LogBoxPolyfillDOM({
   ...props
 }: {
   onCopyText?: (text: string) => void;
-  fetchJsonAsync?: (input: string, init?: {
-    method?: string;
-    body?: string;
-  }) => Promise<any>;
+  fetchJsonAsync?: (
+    input: string,
+    init?: {
+      method?: string;
+      body?: string;
+    }
+  ) => Promise<any>;
   reloadRuntime?: () => void;
   platform?: string;
   devServerUrl?: string;
@@ -104,7 +108,7 @@ export default function LogBoxPolyfillDOM({
         }
       ) ?? []),
       // Convert native logs to Expo Log Box format
-      ...((props.nativeLogs?.map(({ message, stack }) => {
+      ...(props.nativeLogs?.map(({ message, stack }) => {
         let processedMessage = message;
         let processedStack = stack || [];
 
@@ -115,27 +119,29 @@ export default function LogBoxPolyfillDOM({
 
         if (platform === 'android') {
           try {
-              const bodyIndex = processedMessage.indexOf("Body:");
-              if (bodyIndex !== -1) {
-                const originalJson = processedMessage.slice(bodyIndex + 5);
-                if (originalJson) {
-                  const originalErrorResponseBody = JSON.parse(originalJson);
-                  processedMessage = originalErrorResponseBody.message;
-                }
+            const bodyIndex = processedMessage.indexOf('Body:');
+            if (bodyIndex !== -1) {
+              const originalJson = processedMessage.slice(bodyIndex + 5);
+              if (originalJson) {
+                const originalErrorResponseBody = JSON.parse(originalJson);
+                processedMessage = originalErrorResponseBody.message;
               }
+            }
           } catch (e) {
             // Ignore JSON parse errors
           }
         }
 
-        const log = new LogBoxLog(parseLogBoxException({
-          originalMessage: processedMessage,
-          stack: processedStack,
-        }));
+        const log = new LogBoxLog(
+          parseLogBoxException({
+            originalMessage: processedMessage,
+            stack: processedStack,
+          })
+        );
         // Never show stack for native errors, these are typically bundling errors, component stack would lead to LogBox.
         log.componentStack = [];
         return log;
-      }) ?? [])),
+      }) ?? []),
     ];
   }, [props.logs, props.nativeLogs, platform]);
   const selectedIndex = props.selectedIndex ?? (logs && logs?.length - 1) ?? -1;
@@ -152,21 +158,27 @@ export default function LogBoxPolyfillDOM({
   globalThis.__polyfill_onCopyText = onCopyText;
   // @ts-ignore
   globalThis.__polyfill_platform = platform;
-  
+
   if (fetchJsonAsync) {
     // @ts-ignore
-    globalThis.__polyfill_dom_fetchJsonAsync = async (url: string, options?: {
-      method?: string;
-      body?: string;
-    }) => {
+    globalThis.__polyfill_dom_fetchJsonAsync = async (
+      url: string,
+      options?: {
+        method?: string;
+        body?: string;
+      }
+    ) => {
       const response = await fetchJsonAsync(url, options);
       return JSON.parse(response);
     };
     // @ts-ignore
-    globalThis.__polyfill_dom_fetchAsync = async (url: string, options?: {
-      method?: string;
-      body?: string;
-    }) => {
+    globalThis.__polyfill_dom_fetchAsync = async (
+      url: string,
+      options?: {
+        method?: string;
+        body?: string;
+      }
+    ) => {
       return await fetchJsonAsync(url, options);
     };
   }
@@ -174,7 +186,7 @@ export default function LogBoxPolyfillDOM({
   globalThis.__polyfill_dom_reloadRuntime = reloadRuntime;
   useViewportMeta('width=device-width, initial-scale=1, viewport-fit=cover');
 
-  useNativeLogBoxDataPolyfill({logs}, props);
+  useNativeLogBoxDataPolyfill({ logs }, props);
 
   return (
     <LogContext.Provider
@@ -184,7 +196,7 @@ export default function LogBoxPolyfillDOM({
         logs,
       }}>
       <RuntimePlatformProvider platform={platform}>
-        <ActionsProvider onMinimize={onMinimize} >
+        <ActionsProvider onMinimize={onMinimize}>
           <LogBoxInspectorContainer />
         </ActionsProvider>
       </RuntimePlatformProvider>
@@ -192,18 +204,23 @@ export default function LogBoxPolyfillDOM({
   );
 }
 
-function useNativeLogBoxDataPolyfill({
-  logs,
-}: {
-  logs: LogBoxLog[];
-}, polyfill: {
-  onChangeSelectedIndex?: (index: number) => void;
-  onDismiss?: (index: number) => void;
-}) {
+function useNativeLogBoxDataPolyfill(
+  {
+    logs,
+  }: {
+    logs: LogBoxLog[];
+  },
+  polyfill: {
+    onChangeSelectedIndex?: (index: number) => void;
+    onDismiss?: (index: number) => void;
+  }
+) {
   // @ts-ignore
+  // eslint-disable-next-line import/namespace
   LogBoxData.setSelectedLog = polyfill.onChangeSelectedIndex;
 
   // @ts-ignore
+  // eslint-disable-next-line import/namespace
   LogBoxData.dismiss = (log: LogBoxLog) => {
     const index = logs.indexOf(log);
     polyfill.onDismiss?.(index);

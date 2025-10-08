@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
-import { MetroPackageResolutionError } from '@expo/log-box/build/metro-build-errors';
+import { parseWebBuildErrors } from '@expo/log-box';
 import chalk from 'chalk';
 import { stripVTControlCharacters } from 'node:util';
 import path from 'path';
@@ -247,74 +247,14 @@ export async function logMetroError(
   });
 }
 
-function isTransformError(
-  error: any
-): error is { type: 'TransformError'; filename: string; lineNumber: number; column: number } {
-  return error.type === 'TransformError';
-}
-
 /** @returns the html required to render the static metro error as an SPA. */
 function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): LogBoxLog {
-  // TODO: Merge with hmr._onMetroError
-
-  // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
-  let stack: MetroStackFrame[] | undefined;
-  if (isTransformError(error) && error.filename) {
-    // Syntax errors in static rendering.
-    stack = [
-      {
-        file: path.join(projectRoot, error.filename),
-        methodName: '<unknown>',
-        arguments: [],
-        // TODO: Import stack
-        lineNumber: error.lineNumber,
-        column: error.column,
-      },
-    ];
-  } else if (
-    'originModulePath' in error &&
-    typeof error.originModulePath === 'string' &&
-    'targetModuleName' in error &&
-    typeof error.targetModuleName === 'string' &&
-    'cause' in error
-  ) {
-    const message = [
-      // @ts-ignore
-      error.type,
-      error.message,
-    ]
-      .filter(Boolean)
-      .join(' ');
-
-    const type: string | undefined = (error as any).type;
-    const errors: any[] | undefined = (error as any).errors;
-    // TODO: Use import stack here when the error is resolution based.
-    return new LogBoxLog(
-      new MetroPackageResolutionError(
-        message,
-        type,
-        errors,
-        error.originModulePath,
-        error.targetModuleName,
-        // @ts-expect-error
-        error.cause
-      ).toLogBoxLogDataLegacy()
-    );
-  } else {
-    stack = parseErrorStack(projectRoot, error.stack);
-  }
-
-  return new LogBoxLog({
-    level: 'static',
-    message: {
-      content: error.message,
-      substitutions: [],
-    },
-    isComponentError: false,
-    stack,
-    category: 'static',
-    componentStack: [],
+  const data = parseWebBuildErrors({
+    error,
+    projectRoot,
+    parseErrorStack,
   });
+  return new LogBoxLog(data);
 }
 
 /** @returns the html required to render the static metro error as an SPA. */

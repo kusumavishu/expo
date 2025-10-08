@@ -5,8 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import type { StackType } from '../Data/LogBoxLog';
-import { type MetroStackFrame } from '../devServerEndpoints';
+import type { StackType, MetroStackFrame } from '../Data/Types';
 export declare function StackTraceList({ onRetry, type, stack, symbolicationStatus, projectRoot, }: {
     type: StackType;
     projectRoot: string;

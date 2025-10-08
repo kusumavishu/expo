@@ -10,7 +10,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text } from 'react-native';
-
 import {
   GestureResponderEvent,
   type Insets,

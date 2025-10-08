@@ -45,10 +45,9 @@ exports.StackTraceList = StackTraceList;
  */
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
-const devServerEndpoints_1 = require("../devServerEndpoints");
 const LogBoxInspectorSourceMapStatus_1 = require("./LogBoxInspectorSourceMapStatus");
-// @ts-ignore
 const StackTraceList_module_css_1 = __importDefault(require("./StackTraceList.module.css"));
+const devServerEndpoints_1 = require("../utils/devServerEndpoints");
 function Transition({ children, status, onExitComplete, isInitial, index, initialDelay = 50, }) {
     const ref = react_1.default.useRef(null);
     react_1.default.useLayoutEffect(() => {
@@ -107,7 +106,6 @@ function List({ items, showCollapsed, isInitial, initialDelay, }) {
     const [displayItems, setDisplayItems] = react_1.default.useState(items.filter((item) => !item.isCollapsed).map((item) => ({ item, status: 'stable' })));
     react_1.default.useEffect(() => {
         const visibleItems = showCollapsed ? items : items.filter((item) => !item.isCollapsed);
-        // @ts-ignore TODO: fix types
         setDisplayItems((prev) => {
             const prevIds = new Set(prev.map((d) => d.item.id));
             const newItems = visibleItems
@@ -149,10 +147,6 @@ function useContainerWidth() {
 }
 function StackTraceList({ onRetry, type, stack, symbolicationStatus, projectRoot, }) {
     const [collapsed, setCollapsed] = (0, react_1.useState)(true);
-    // const [collapsed, setCollapsed] = useState(() => {
-    //   // Only collapse frames initially if some frames are not collapsed.
-    //   return stack?.some(({ collapse }) => !collapse);
-    // });
     const stackCount = stack?.length;
     const [isInitial, setIsInitial] = react_1.default.useState(true);
     const initialDelay = 50;
@@ -214,7 +208,7 @@ function StackTraceList({ onRetry, type, stack, symbolicationStatus, projectRoot
                 react_1.default.createElement(LogBoxInspectorSourceMapStatus_1.LogBoxInspectorSourceMapStatus, { onPress: symbolicationStatus === 'FAILED' ? onRetry : null, status: symbolicationStatus })),
             react_1.default.createElement(react_native_1.Pressable, { onPress: () => setCollapsed(!collapsed) }, ({ 
             //@ts-expect-error fix rn-web typings
-            hovered }) => (react_1.default.createElement("div", { title: collapseTitle.full, style: {
+            hovered, }) => (react_1.default.createElement("div", { title: collapseTitle.full, style: {
                     padding: 6,
                     borderRadius: 8,
                     transition: 'background-color 0.3s',

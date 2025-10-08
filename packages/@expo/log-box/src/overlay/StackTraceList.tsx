@@ -7,17 +7,14 @@
 import React, { useState, type SVGProps } from 'react';
 import { Pressable } from 'react-native';
 
-import type { StackType } from '../Data/LogBoxLog';
+import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
+import styles from './StackTraceList.module.css';
+import type { StackType, MetroStackFrame } from '../Data/Types';
 import {
   getStackFormattedLocation,
   isStackFileAnonymous,
   openFileInEditor,
-  type MetroStackFrame,
-} from '../devServerEndpoints';
-import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
-
-// @ts-ignore
-import styles from './StackTraceList.module.css';
+} from '../utils/devServerEndpoints';
 
 function Transition({
   children,
@@ -94,6 +91,11 @@ function Transition({
   );
 }
 
+type DisplayItem = {
+  item: { id: number; content: React.ReactNode; isCollapsed: boolean };
+  status: 'stable' | 'entering' | 'exiting';
+};
+
 function List({
   items,
   showCollapsed,
@@ -105,23 +107,19 @@ function List({
   isInitial: boolean;
   initialDelay: number;
 }) {
-  const [displayItems, setDisplayItems] = React.useState<
-    {
-      item: { id: number; content: React.ReactNode; isCollapsed: boolean };
-      status: 'stable' | 'entering' | 'exiting';
-    }[]
-  >(items.filter((item) => !item.isCollapsed).map((item) => ({ item, status: 'stable' })));
+  const [displayItems, setDisplayItems] = React.useState<DisplayItem[]>(
+    items.filter((item) => !item.isCollapsed).map((item) => ({ item, status: 'stable' }))
+  );
 
   React.useEffect(() => {
     const visibleItems = showCollapsed ? items : items.filter((item) => !item.isCollapsed);
 
-    // @ts-ignore TODO: fix types
-    setDisplayItems((prev) => {
+    setDisplayItems((prev: DisplayItem[]): DisplayItem[] => {
       const prevIds = new Set(prev.map((d) => d.item.id));
-      const newItems = visibleItems
+      const newItems: DisplayItem[] = visibleItems
         .filter((item) => !prevIds.has(item.id))
         .map((item) => ({ item, status: 'entering' }));
-      const updatedPrev = prev.map((d) => {
+      const updatedPrev: DisplayItem[] = prev.map((d) => {
         if (!visibleItems.some((item) => item.id === d.item.id)) {
           return { ...d, status: 'exiting' };
         }
@@ -190,10 +188,6 @@ export function StackTraceList({
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
 }) {
   const [collapsed, setCollapsed] = useState(true);
-  // const [collapsed, setCollapsed] = useState(() => {
-  //   // Only collapse frames initially if some frames are not collapsed.
-  //   return stack?.some(({ collapse }) => !collapse);
-  // });
 
   const stackCount = stack?.length;
 
@@ -293,7 +287,7 @@ export function StackTraceList({
         <Pressable onPress={() => setCollapsed(!collapsed)}>
           {({
             //@ts-expect-error fix rn-web typings
-            hovered
+            hovered,
           }) => (
             <div
               title={collapseTitle.full}

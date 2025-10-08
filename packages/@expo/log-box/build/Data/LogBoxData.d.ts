@@ -6,10 +6,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import * as React from 'react';
-import { MetroStackFrame } from '../devServerEndpoints';
-import type { LogLevel } from './LogBoxLog';
-import { LogBoxLog, StackType } from './LogBoxLog';
-import type { Category, ExtendedExceptionData, Message } from './parseLogBoxLog';
+import { LogBoxLog } from './LogBoxLog';
+import type { LogLevel, MetroStackFrame, StackType, Category, Message } from './Types';
+import type { ExtendedExceptionData } from './parseLogBoxLog';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = {
     level: LogLevel;

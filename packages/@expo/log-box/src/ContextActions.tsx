@@ -1,5 +1,4 @@
-import React from 'react';
-import { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 
 interface ActionsContextType {
   onMinimize: (() => void) | undefined;
@@ -9,12 +8,11 @@ const ActionsContext = createContext<ActionsContextType>({
   onMinimize: () => {},
 });
 
-export const ActionsProvider: React.FC<{ children: ReactNode; } & ActionsContextType> = ({ children, onMinimize }) => {
-  return (
-    <ActionsContext.Provider value={{ onMinimize }}>
-      {children}
-    </ActionsContext.Provider>
-  );
+export const ActionsProvider: React.FC<{ children: ReactNode } & ActionsContextType> = ({
+  children,
+  onMinimize,
+}) => {
+  return <ActionsContext.Provider value={{ onMinimize }}>{children}</ActionsContext.Provider>;
 };
 
 export const withActions = (Component: React.FC, actions: ActionsContextType) => {

@@ -8,8 +8,9 @@
 
 import React from 'react';
 
-import { MetroStackFrame, parseErrorStack } from '../devServerEndpoints';
-import type { LogBoxLogData } from './LogBoxLog';
+import type { Category, LogBoxLogData, Message, MetroStackFrame } from './Types';
+import { parseErrorStack } from '../utils/devServerEndpoints';
+
 type ExceptionData = any;
 
 const BABEL_TRANSFORM_ERROR_FORMAT =
@@ -17,34 +18,11 @@ const BABEL_TRANSFORM_ERROR_FORMAT =
 const BABEL_CODE_FRAME_ERROR_FORMAT =
   /^(?:TransformError )?(?:.*):? (?:.*?)([/|\\].*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
 const METRO_ERROR_FORMAT =
-	/^(?:(?:InternalError )?Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
+  /^(?:(?:InternalError )?Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
 
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean;
   [key: string]: any;
-};
-export type Category = string;
-export type CodeFrame = {
-  content: string;
-  location?: {
-    row: number;
-    column: number;
-    [key: string]: any;
-  } | null;
-  fileName: string;
-
-  // TODO: When React switched to using call stack frames,
-  // we gained the ability to use the collapse flag, but
-  // it is not integrated into the LogBox UI.
-  collapse?: boolean;
-};
-
-export type Message = {
-  content: string;
-  substitutions: {
-    length: number;
-    offset: number;
-  }[];
 };
 
 const SUBSTITUTION = '\ufeff%s';

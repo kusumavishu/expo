@@ -38,13 +38,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LogBoxPolyfillDOM;
-const ErrorOverlay_1 = require("./ErrorOverlay");
-const LogBoxLog_1 = require("./Data/LogBoxLog");
-const LogBoxData = __importStar(require("./Data/LogBoxData"));
 const react_1 = __importDefault(require("react"));
-const parseLogBoxLog_1 = require("./Data/parseLogBoxLog");
-const ContextPlatform_1 = require("./ContextPlatform");
 const ContextActions_1 = require("./ContextActions");
+const ContextPlatform_1 = require("./ContextPlatform");
+const LogBoxData = __importStar(require("./Data/LogBoxData"));
+const LogBoxLog_1 = require("./Data/LogBoxLog");
+const parseLogBoxLog_1 = require("./Data/parseLogBoxLog");
+const Overlay_1 = require("./overlay/Overlay");
 function LogBoxPolyfillDOM({ onMinimize, onCopyText, platform, fetchJsonAsync, reloadRuntime, devServerUrl, ...props }) {
     const logs = react_1.default.useMemo(() => {
         return [
@@ -101,7 +101,7 @@ function LogBoxPolyfillDOM({ onMinimize, onCopyText, platform, fetchJsonAsync, r
                 });
             }) ?? []),
             // Convert native logs to Expo Log Box format
-            ...((props.nativeLogs?.map(({ message, stack }) => {
+            ...(props.nativeLogs?.map(({ message, stack }) => {
                 let processedMessage = message;
                 let processedStack = stack || [];
                 if (processedMessage.startsWith('Unable to load script.')) {
@@ -110,7 +110,7 @@ function LogBoxPolyfillDOM({ onMinimize, onCopyText, platform, fetchJsonAsync, r
                 }
                 if (platform === 'android') {
                     try {
-                        const bodyIndex = processedMessage.indexOf("Body:");
+                        const bodyIndex = processedMessage.indexOf('Body:');
                         if (bodyIndex !== -1) {
                             const originalJson = processedMessage.slice(bodyIndex + 5);
                             if (originalJson) {
@@ -130,7 +130,7 @@ function LogBoxPolyfillDOM({ onMinimize, onCopyText, platform, fetchJsonAsync, r
                 // Never show stack for native errors, these are typically bundling errors, component stack would lead to LogBox.
                 log.componentStack = [];
                 return log;
-            }) ?? [])),
+            }) ?? []),
         ];
     }, [props.logs, props.nativeLogs, platform]);
     const selectedIndex = props.selectedIndex ?? (logs && logs?.length - 1) ?? -1;
@@ -167,12 +167,14 @@ function LogBoxPolyfillDOM({ onMinimize, onCopyText, platform, fetchJsonAsync, r
         } },
         react_1.default.createElement(ContextPlatform_1.RuntimePlatformProvider, { platform: platform },
             react_1.default.createElement(ContextActions_1.ActionsProvider, { onMinimize: onMinimize },
-                react_1.default.createElement(ErrorOverlay_1.LogBoxInspectorContainer, null)))));
+                react_1.default.createElement(Overlay_1.LogBoxInspectorContainer, null)))));
 }
 function useNativeLogBoxDataPolyfill({ logs, }, polyfill) {
     // @ts-ignore
+    // eslint-disable-next-line import/namespace
     LogBoxData.setSelectedLog = polyfill.onChangeSelectedIndex;
     // @ts-ignore
+    // eslint-disable-next-line import/namespace
     LogBoxData.dismiss = (log) => {
         const index = logs.indexOf(log);
         polyfill.onDismiss?.(index);

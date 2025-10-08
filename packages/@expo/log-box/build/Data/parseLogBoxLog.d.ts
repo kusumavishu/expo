@@ -5,30 +5,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { MetroStackFrame } from '../devServerEndpoints';
-import type { LogBoxLogData } from './LogBoxLog';
+import type { Category, LogBoxLogData, Message, MetroStackFrame } from './Types';
 type ExceptionData = any;
 export type ExtendedExceptionData = ExceptionData & {
     isComponentError: boolean;
     [key: string]: any;
-};
-export type Category = string;
-export type CodeFrame = {
-    content: string;
-    location?: {
-        row: number;
-        column: number;
-        [key: string]: any;
-    } | null;
-    fileName: string;
-    collapse?: boolean;
-};
-export type Message = {
-    content: string;
-    substitutions: {
-        length: number;
-        offset: number;
-    }[];
 };
 export declare function parseInterpolation(args: readonly any[]): {
     category: Category;

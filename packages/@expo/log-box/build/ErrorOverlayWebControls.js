@@ -39,23 +39,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.presentGlobalErrorOverlay = presentGlobalErrorOverlay;
 exports.dismissGlobalErrorOverlay = dismissGlobalErrorOverlay;
 const react_1 = __importDefault(require("react"));
-const LogBoxData = __importStar(require("./Data/LogBoxData"));
-const ContextPlatform_1 = require("./ContextPlatform");
 const ContextActions_1 = require("./ContextActions");
-const render_1 = require("./render");
+const ContextPlatform_1 = require("./ContextPlatform");
+const LogBoxData = __importStar(require("./Data/LogBoxData"));
+const renderInShadowRoot_1 = require("./utils/renderInShadowRoot");
 let currentRoot = null;
 function presentGlobalErrorOverlay() {
     if (currentRoot) {
         return;
     }
-    const { LogBoxInspectorContainer } = require('./ErrorOverlay');
+    const { LogBoxInspectorContainer } = require('./overlay/Overlay');
     const ErrorOverlay = LogBoxData.withSubscription((0, ContextPlatform_1.withRuntimePlatform)((0, ContextActions_1.withActions)(LogBoxInspectorContainer, {
         onMinimize: () => {
             LogBoxData.setSelectedLog(-1);
             LogBoxData.setSelectedLog(-1);
         },
     }), { platform: process.env.EXPO_OS ?? 'web' }));
-    currentRoot = (0, render_1.renderInShadowRoot)('error-overlay', react_1.default.createElement(ErrorOverlay));
+    currentRoot = (0, renderInShadowRoot_1.renderInShadowRoot)('error-overlay', react_1.default.createElement(ErrorOverlay));
 }
 function dismissGlobalErrorOverlay() {
     currentRoot?.unmount();
