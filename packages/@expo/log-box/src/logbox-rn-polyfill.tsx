@@ -73,10 +73,6 @@ function LogBoxRNPolyfill(
     );
   } : ({children}: { children: React.ReactNode }) => <>{children}</>, []);
 
-  if (!open && Platform.OS !== 'ios') {
-    return null;
-  }
-
   return (
     <LogBoxWrapper>
       <View
@@ -118,10 +114,13 @@ function LogBoxRNPolyfill(
             }
           }}
           reloadRuntime={() => {
-            DevSettings.reload();
+            // NOTE: For iOS only the reload is enough, but on Android the app gets stuck on an empty black screen
+            onMinimize();
+            setTimeout(() => {
+              DevSettings.reload();
+            }, 100);
           }}
           onCopyText={(text: string) => {
-            // TODO: Export to helper and use DevServer to for host clipboard with fallback to device clipboard
             Clipboard.setString(text);
           }}
           onDismiss={onDismiss}
