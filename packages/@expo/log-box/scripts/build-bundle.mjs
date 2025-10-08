@@ -3,6 +3,7 @@
 import spawn from '@expo/spawn-async';
 import { rm, rename, glob } from 'fs/promises';
 import { join, dirname } from 'path';
+import { argv } from 'process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,7 @@ const result = await spawn(
     appBundlePath,
     '--entry-file',
     join(__dirname, '../app/index.ts'),
+    ...argv.slice(2),
   ],
   { stdio: 'inherit' }
 );
